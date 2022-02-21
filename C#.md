@@ -265,11 +265,33 @@ Przechowywane jako tablice, zapisane w jednym bloku pamięci. Dzięki takiemu ro
 - rozszerza `IEnumerable<T>`
 - odpowiednie do zapytań bazodanowych, ponieważ filtracja danych odbywa się po stronie serwera bazy danych, a nie klienta
 ## IDictionary<TKey, TValue>
-- rozszerza ICollection<KeyValuePair<TKey, TValue>>
+- rozszerza `ICollection<KeyValuePair<TKey, TValue>>`
 ## Dictionary<TKey, TValue>
-todo 
-## ISet<T>
-todo
+Zapewnia możliwość szybkiego wyszukiwania, wykorzystując przy tym `GetHashCode()`.
+Pobranie elemntu po kluczu, jest bliski `O(1)`, ponieważ słownik jest zaimplementowany jako tablica asocjacyjna. 
+### Inicjalizacja słownika
+-  użycje składni inicjalizacji kolekcji
+```csharp
+var dic = new Dictionary<string, int>
+{
+    { "jeden", 1 }, 
+    { "dwa", 2 }, 
+    { "trzy", 3 }, 
+}
+``` 
+- użycie składni inicjalizacji obiektu
+```csharp
+var dic = new Dictionary<string, int>
+{
+    ["jeden"] = 1, 
+    ["dwa"] = 2, 
+    ["trzy"=  3, 
+}
+```
+Efekt wykonania kodu jest taki sam, jednak dla każdego z nich kompilator wygeneruje nieco inny kod. W pierwszym przykładzi użyje metody `Add`, a w drugim przy użyciu indeksatora. W przypadku użyciu `Add`, jest sprawdzane, czy istnieje już taki klucz- gdy będzie istniał, zostanie wyrzucony wyjątek.
+## ISet\<T>
+Oferuje bardzo prosty model działania: dana warto albo jest elementem zbioru, albo nim nie jest.na dodawa i usuwać elementy, jednak zbiór nie dysponuje żadną informacją o tym, ile elementów zostało do niego dodanych, ani nie wymaga by były one posortowane w jakimkolwiek porządku.
+- rozszerza `ICollection<T>`
 ## Odwołanie do elementów z użyciem indeksów i zakresów
 ### System.Index
 Operator `^` można umieszczać przed każdym wyrażeniem typu `int`. Generuje on wartość typu `System.Index`, służącą do reprezentowania położenia. W przypadku tworzenia indeksu przy użyciu operatora `^` określa on położenie względem końca. 
