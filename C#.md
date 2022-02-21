@@ -286,3 +286,99 @@ var slice2 = array[..^3];     // array[Range.EndAt(new Index(3, fromEnd: true))]
 var slice3 = array[2..];      // array[Range.StartAt(2)]
 var slice4 = array[..];       // array[Range.All]
 ```
+
+# Dziedziczenie
+## Metody wirtualne
+- przesłanianie metody
+- sprawdzany jest przekazany obiekt i jeśli posiada on własną implementację metody wirtualnej, to będzie ona wywołana
+- metoda jest wybierana na podstawie faktycznego typu obiektu docelowego, określanego w trakcie działania programu, a nie na podstawie statycznego typu (określanego podczas kompliacji)
+- metody statyczne nie mogą być wirtualne
+## Klasy abstrakcyjne
+- dziedzicząc z klasy abstrakcyjnej musimy implementować wszystkie metody abstrakcyjne
+- mogą implementować interfejs bez konieczności jego implementacji (wtedy metody z interfejsu są abstrakcyjne)
+## Metody abstrakcyjne
+- nie posiadają implementacji
+- są wirtualne
+- nie mogą być prywatne
+## Metody new
+- ukrywanie metody
+```csharp
+public class Student : Person
+{
+...
+}
+
+Person person = new Person();
+Student student = new Student();
+Person studentP = new Student();
+
+// dla metody przesłoniętej (override)
+Console.WriteLine(person.GetClassInfo()); // Person
+Console.WriteLine(student.GetClassInfo()); // Student 
+Console.WriteLine(studentP.GetClassInfo()); // Student
+
+// dla metody ukrytej (new)
+Console.WriteLine(person.GetClassInfo()); // Person
+Console.WriteLine(student.GetClassInfo()); // Student 
+Console.WriteLine(studentP.GetClassInfo()); // Person
+```
+## Proces inicjalizacji
+1. pola klasy pochodnej
+1. pola klasy bazowej
+1. konstruktor klasy bazowej
+1. konstruktor klasy pochodnej
+
+# Zarządzanie pamięcią
+## Garbage Collector
+- Wszystkie obiekty, które trafiają do pamięci są umieszczane na stosie i/lub na stercie.
+- Stos jest czyszczony gdy kończy się metoda. O to aby tak było dba CLR.
+- Zarządzaniem stertą zajmuje się GC.
+- GC uruchamia się w sytuacjach:
+    - gdy kończy się pamięć na stercie do umieszczenia kolejnego obiektu 
+    - gdy OS zgłasza mało pamięci
+- GC kasuje obiekty, gdy nie ma do nich żadnych referencji.
+- Referencja główna - jest to miejsce w pamięci, które może zawierać referencję, na pewno zostało zainicjowane i którego program będzie mógł użyć w przyszłości bez potrzeby korzystania z jakiejś innej referencji do obiektu.
+### Działanie mechanizmu
+1. Mechanizm określa do których obiektów można dotrzeć używając listy referencji głównych istniejących we wszystkich wątkach.
+1. Sprawdza kolejno każdą referencję i jeśli jest ona różna od null, to uznaje, że obiekt, do którego się ona odwołuje jest osiągalny.
+1. Dla każdego nowo odkrytego obiektu, mechanizm ten dodaje jego pola instancji typu referencyjnego do listy referencji, które trzeba sprawdzić, a następnie usuwa z niej ewentualnie powtórzenia.
+1. Oznacza to, że jeśli obiekt jest osiągalny, to osiągalne są także wszystkie inne obiekty, których referencje są w nim przechowywane.
+1. Mechanizm jest powtarzany tak długo, aż wyczerpie się lista referencji, które należy sprawdzić
+jeśli obiekt do którego nie udało się dotrzeć w tym procesie, jest uznawany za nieosiągalny.
+
+https://www.geeksforgeeks.org/garbage-collection-in-c-sharp-dot-net-framework/
+
+## IDisposable
+- wykorzystywany przy reprezentowaniu zasobów spoza CLR, takich jak:
+    - połączenia z bazą danych
+    - połączenia sieciowe
+    - operacje wejścia/wyjścia na plikach
+    - COM
+    - DLL z c++
+- metoda `Dispose()` jest uruchamiana po bloku `using`
+
+# Delegaty
+Obiekty udostępniające referencję do metody, przy czym może to być metoda statyczna jak i metoda instancji.
+## Typy
+- `bool Predicate<in T>(T obj)` - oznacza funkcję określającą, czy pewien warunek jest spełniony
+- `void Action <in T>(T arg)`
+- `TResult Func<out TResult, int T>(T arg)`
+
+# Pytania
+## Checked oraz unchecked
+Słowa `unchecked` oraz `checked` służą do kontrolowania czy nie nastąpił overflow podczas operacji arytmetycznych. Wszystkie niepoprawne operacje w klauzuli `checked` wywołają wyjątek overflow, ponieważ podczas wykonywania obliczeń sprawdzane jest czy wynik wciąż się mieści w zmiennej
+- `unchecked` często używa się do liczenia hashy `GetHashCode())`. 
+- Ponadto `checked`\\`unchecked` dotyczy wyłącznie `int`\\`uint`. Zasięg dla `decimal` jest zawsze sprawdzany (nawet w `unchecked` – nie ma to znaczenia). Z kolei operacje na `float`\\`double` nie są nigdy sprawdzane, ponieważ istnieją tam wartości takie jak `Inf`, `Nan`.
+## yield
+- służy do "leniwego" dodawania do kolekcji
+- poszczególne elementy dodawane są dopiero w momencie zgłoszenia na nie zapotrzebowania
+- zamiast dodawać do listy, używamy `yield return` i element, który chcemy dodać do listy
+- `yield break` - przerwanie działania metody
+## lock
+- za pomocą operatora `lock` blokujemy dostęp do dostarczonego obiektu
+- jeśli drugi wątek będzie chciał w tym samym momencie wejść do obszaru lock, będzie musiał poczekać, aż pierwszy skończy wszelkie operacje zawarte w klauzuli lock
+- nie powinno się używać referencji this oraz operatora lock
+## Eager-loading
+Wykonywanie czynności zaraz po jej wywołaniu. Przykład: mnożenie dwóch macierzy - obliczenia są od razu wykonywane.
+## Lazy-loading
+Czynności są wykonywane tylko gdy zajdzie taka potrzeba. Przykład: mnożenie dwóch macierzy - obliczenia są wykonywane dopiero gdy chcemy uzyskać dostępu do konkretnego elementu.
