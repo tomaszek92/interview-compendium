@@ -131,7 +131,7 @@ Przekazanie argumentu przez referencję.
 Przekazanie argumentu przez referencję, ale obiekt musi zostać zainicjalizowany w ciele metody.
 #### in
 Przekazanie przez referencję, z tym zastrzeżeniem, że nie można nadpisać wartości. Użycie tego słowa kluczowego pozwala na uniknięcie tworzenia kopii. Należy używać wyłącznie w razie operowania na danych, które są większe od wskaźników. To właśnie z tego powodu nie warto go używać do przekazywania danych typu int. W procesach 32-bitowych referencje są 32-bitowymi wskaźnikami (w 64-bitowych są 64-bitowymi wskaźnikami). 
-Stosowanie słow kluczoego `in` w miejscu wywołania jest opcjonalne.
+Stosowanie słowa kluczowego `in` w miejscu wywołania jest opcjonalne.
 Używać wyłącznie podczas korzystania z typów wartościowych przeznaczonych tylko do odczytu (readonly).
 #### Rozszerzające (extension method)
 - nowa składowa już istniejącego typu.
@@ -141,7 +141,7 @@ Używać wyłącznie podczas korzystania z typów wartościowych przeznaczonych 
 - zakamuflowana metoda
 - Reprezentuje informację o obiekcie, a nie operację, jaką ten obiekt może wykonać. Zatem odczyt właściwości nie jest kosztowny i nie powinien mieć żadnych poważnych efektów ubocznych
 #### Zmienne typu wartościowego
-Można doporowadzić do sytuacji, w której nie jest modyfikownaa wartość, lecz jej kopia. 
+Można doprowadzić do sytuacji, w której nie jest modyfikowana wartość, lecz jej kopia. 
 ```csharp
 public class Foo
 {
@@ -191,6 +191,7 @@ public static class Program
     - implicit (niejawne)
 ## Interfejsy
 - deklaruje metody, właściwości, zdarzenia, ale nie określa ich implementacji, ani zawartości
+- klasa może implementować wiele interfejsów
 - właściwości określają, czy należy utworzyć akcesory `get` i `set`
 - implementacja jawna 
     - metody, właściwości, zdarzenia z interfejsu są prywatne
@@ -209,7 +210,7 @@ public class DoStuff: IDoStuff
 ...
 var doStuff = new DoStuff();
 var iDoStuff = (IDooStuff)doStuff;
-Console.WriteLine(iDoStruff.SomeMethod());
+Console.WriteLine(iDoStuff.SomeMethod());
 ```
 - Od C# 8 wprowadzono domyślną implementację metod w interfejsach. Zostało to dodane w celu zapewnienia wstecznej kompatybilności. Przykładowo do jakiegoś interfejsu zostanie dodana nowa metoda, to może to wywołać problemy w istniejącym kodzie, który korzysta z tego interfejsu.
 ## Typy anonimowe
@@ -231,7 +232,7 @@ Typy generyczne pozwalają na opóźnienie w dostarczeniu specyfikacji typu dany
 - konstruktora bezparametrowego - `where T : new()`
 - typu referencyjnego - `where T : class`
 - typu wartościowego - `where T : struct`
-- typu notnull- argument będzie musiał być typem wartościowym, bądz referencyjnym, który nie akcetpuje wartości null - `where T: notnull`
+- typu notnull- argument będzie musiał być typem wartościowym, bądź referencyjnym, który nie akceptuje wartości null - `where T: notnull`
 - typu enum - `where T : Enum`
 
 
@@ -260,7 +261,7 @@ Klasa bazowa do budowy własnych typów kolekcji.
 - rozszerza `ICollection<T>`
 - możliwość dostępu do elementu za pomocą `[]`
 ## List\<T>
-Przechowywane jako tablice, zapisane w jednym bloku pamięci. Dzięki takiemu rozwiązaniu zwyczajny dostęp do elementów tablicy jest bardzo wydajny, lecz również z jego powodu operacje wstawiania wiążą się z przesuwaniem elementów w celu utowrzeni amiejsca na nowe dane, a operacje usuwania także wymagają przesuwania elementów, by zlikwidować postwałą lukę.
+Przechowywane jako tablice, zapisane w jednym bloku pamięci. Dzięki takiemu rozwiązaniu zwyczajny dostęp do elementów tablicy jest bardzo wydajny, lecz również z jego powodu operacje wstawiania wiążą się z przesuwaniem elementów w celu utworzenia miejsca na nowe dane, a operacje usuwania także wymagają przesuwania elementów, by zlikwidować powstałą lukę.
 ## IQueryable<T>
 - rozszerza `IEnumerable<T>`
 - odpowiednie do zapytań bazodanowych, ponieważ filtracja danych odbywa się po stronie serwera bazy danych, a nie klienta
@@ -268,9 +269,9 @@ Przechowywane jako tablice, zapisane w jednym bloku pamięci. Dzięki takiemu ro
 - rozszerza `ICollection<KeyValuePair<TKey, TValue>>`
 ## Dictionary<TKey, TValue>
 Zapewnia możliwość szybkiego wyszukiwania, wykorzystując przy tym `GetHashCode()`.
-Pobranie elemntu po kluczu, jest bliski `O(1)`, ponieważ słownik jest zaimplementowany jako tablica asocjacyjna. 
+Pobranie elementu po kluczu, jest bliski `O(1)`, ponieważ słownik jest zaimplementowany jako tablica asocjacyjna. 
 ### Inicjalizacja słownika
--  użycje składni inicjalizacji kolekcji
+-  użycie składni inicjalizacji kolekcji
 ```csharp
 var dic = new Dictionary<string, int>
 {
@@ -288,9 +289,9 @@ var dic = new Dictionary<string, int>
     ["trzy"=  3, 
 }
 ```
-Efekt wykonania kodu jest taki sam, jednak dla każdego z nich kompilator wygeneruje nieco inny kod. W pierwszym przykładzi użyje metody `Add`, a w drugim przy użyciu indeksatora. W przypadku użyciu `Add`, jest sprawdzane, czy istnieje już taki klucz- gdy będzie istniał, zostanie wyrzucony wyjątek.
+Efekt wykonania kodu jest taki sam, jednak dla każdego z nich kompilator wygeneruje nieco inny kod. W pierwszym przykładzie użyje metody `Add`, a w drugim przy użyciu indeksatora. W przypadku użyciu `Add`, jest sprawdzane, czy istnieje już taki klucz- gdy będzie istniał, zostanie wyrzucony wyjątek.
 ## ISet\<T>
-Oferuje bardzo prosty model działania: dana warto albo jest elementem zbioru, albo nim nie jest.na dodawa i usuwać elementy, jednak zbiór nie dysponuje żadną informacją o tym, ile elementów zostało do niego dodanych, ani nie wymaga by były one posortowane w jakimkolwiek porządku.
+Oferuje bardzo prosty model działania: dana warto albo jest elementem zbioru, albo nim nie jest. Można dodawać i usuwać elementy, jednak zbiór nie dysponuje żadną informacją o tym, ile elementów zostało do niego dodanych, ani nie wymaga by były one posortowane w jakimkolwiek porządku.
 - rozszerza `ICollection<T>`
 ## Odwołanie do elementów z użyciem indeksów i zakresów
 ### System.Index
@@ -310,10 +311,47 @@ var slice4 = array[..];       // array[Range.All]
 ```
 
 # Dziedziczenie
+- Klasa może dziedziczyć tylko z jednej klasy (mieć jedną klasę bazową).
+- Dziedziczenie nie jest dostępne w typach wartościowych. Typy wartościowe nie są obsługiwane przy użyciu referencji, co przekreśla jedną z podstawowych zalet dziedziczenia: polimorfizm.
+## Kowariancja i kontrawariancja
+- Określają one, czy referencje pewnych typów ogólnych mogą zostać niejawnie skonwertowane do siebie nawzajem, jeśli istnieją niejawne konwersje pomiędzy ich argumentami typów. 
+- Stosowane są wyłącznie w odniesieniu do ogólnych argumentów typów w interfejsach i delegacjach. 
+- Nie można definiować dla klas i struktur.
+### Kowariancja (*covariance*)
+- Jest wartością zwracaną przez metodę.
+```csharp
+interface IFoo<out T>
+{
+    T Do();
+}
+```
+Intuicyjnie można uznać, że opisanie argumentu typu jako "wyjściowy" ma sens, ponieważ interfejs `IFoo<T>` jedynie udostępnia dane typu T- nie definiuje żadnych składowych, które by je pobierały.
+
+Przykładowo mamy taką definicję metody `public static void Foo(IEnumerable<Base> bases) { ... } `, to możemy tą metodę wywołać z `IEnumerable<Derived>`.
+### Kontrawariancja (*contravariance*)
+- Jest parametrami metody.
+```csharp
+interface IFoo<in T>
+{
+    void Add(T t);
+}
+```
+### Inwariancja (*invariance*)
+Nie jest ani konwarianty, ani kontrawiantny.
+## System.Object
+Niemal każdy typ dziedziczy po tej klasie (nawet niejawnie). Wyjątkiem sa wskaźniki.
+### ToString
+Domyślna implementacja zwraca nazwę typu danego obiektu. Jednak dla niektórych typów (typy liczbowe czy bool) są zwracane bardziej użyteczne tekstowe reprezentacje.
+### Equals
+Domyślna implementacja dokonuje porównania na podstawie tożsamości. Czyli zwraca wartość `true` wyłącznie wtedy, gdy obiekt jest porównywany z samym sobą. Niektóre typy (przykładowo `string`) dokonują porównania na podstawie wartości.
+### GetHashCode
+Zwraca ona liczbę całkowitą stanowiącą skróconą reprezentację wartości obiektu.
+### GetType
+Pozwala pobierać informacje na temat typu obiektu.
 ## Metody wirtualne
 - przesłanianie metody
 - sprawdzany jest przekazany obiekt i jeśli posiada on własną implementację metody wirtualnej, to będzie ona wywołana
-- metoda jest wybierana na podstawie faktycznego typu obiektu docelowego, określanego w trakcie działania programu, a nie na podstawie statycznego typu (określanego podczas kompliacji)
+- metoda jest wybierana na podstawie faktycznego typu obiektu docelowego, określanego w trakcie działania programu, a nie na podstawie statycznego typu (określanego podczas kompilacji)
 - metody statyczne nie mogą być wirtualne
 ## Klasy abstrakcyjne
 - dziedzicząc z klasy abstrakcyjnej musimy implementować wszystkie metody abstrakcyjne
