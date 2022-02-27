@@ -362,11 +362,10 @@ Pozwala pobierać informacje na temat typu obiektu.
 - nie mogą być prywatne
 ## Metody new
 - ukrywanie metody
+- w przypadku ukrycia metody klasy bazowej, nie jest ona zastępowana
+- mechanizm dodany dla wstecznej kompatybilności bibliotek
 ```csharp
-public class Student : Person
-{
-...
-}
+public class Student : Person { ... }
 
 Person person = new Person();
 Student student = new Student();
@@ -382,11 +381,16 @@ Console.WriteLine(person.GetClassInfo()); // Person
 Console.WriteLine(student.GetClassInfo()); // Student 
 Console.WriteLine(studentP.GetClassInfo()); // Person
 ```
+## Metody i klasy ostateczne
+- Dodajemy słowo kluczowe `sealed`.
+- Zdeklarowanie metody jako ostatecznej sprawia, że zostanie zablokowana możliwość dalszej jej modyfikacji.
+- Zdeklarowanie klasy jako ostatecznej sprawia, że nie można po niej dziedziczyć. Przykładowo klasa `string` jest oznaczona jako ostateczna. Również typy wyliczeniowe i struktury.
 ## Proces inicjalizacji
 1. pola klasy pochodnej
 1. pola klasy bazowej
 1. konstruktor klasy bazowej
 1. konstruktor klasy pochodnej
+- Z tego powodu nie można korzystać z metody składowych w inicjalizatorach pól.
 
 # Zarządzanie pamięcią
 ## Garbage Collector
