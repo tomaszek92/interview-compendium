@@ -400,8 +400,15 @@ Console.WriteLine(studentP.GetClassInfo()); // Person
 - GC uruchamia się w sytuacjach:
     - gdy kończy się pamięć na stercie do umieszczenia kolejnego obiektu 
     - gdy OS zgłasza mało pamięci
-- GC kasuje obiekty, gdy nie ma do nich żadnych referencji.
+- GC kasuje obiekty, gdy obiekt nie jest osiągalny.
 - Referencja główna - jest to miejsce w pamięci, które może zawierać referencję, na pewno zostało zainicjowane i którego program będzie mógł użyć w przyszłości bez potrzeby korzystania z jakiejś innej referencji do obiektu.
+- CLR dzieli stertę na pokolenia (generacje).
+    - Każde uruchomienie mechanizmu odzyskiwania pamięci powoduje zmianę granic pomiędzy tymi pokoleniami, gdyż są one definiowane jako liczba wykonanych procedur odzyskiwania, które obiekt przetrwał. 
+    - Wszystkie obiekty, które zostały umieszczone na stercie po ostatnim uruchomieniu mechanizmu odzyskiwani pamięci, należą do pokolenia 0, gdyż nie przetrwały jeszcze żadnego odzyskiwania. W momencie uruchomienia kolejnej procedury odzyskiwania obiekty należące do pokolenia 0, które są jeszcze osiągalne, zostaną odpowiednia przemieszczone w ramach scalania stery, a następnie zostaną zaliczone do pokolenia 1.
+    - Pokolenie 1 działa jako swoista poczekalnia, w której obserwujemy obiekty, starając się określić, które z nich będą istnieć bardzo krótko, a które dłużej.
+    - Podczas działania programu od czasu do czasu będzie uruchamiany mechanizm odzyskiwania pamięci, dzięki czemu nowe obiekty, które przetrwały na stercie, zostaną zaliczone do kategorii 1. Jednocześnie niektóre z obiektów należących do kategorii 1 staną się nieosiągalne. 
+    - Obiekty, które przetrwają scalanie pokolenia 1 zostaną przeniesione do pokolenia 2, które jest najstarsze. 
+    - CLR stara się odzyskiwać pamięć pokolenia 2 znacznie rzadziej niż pozostałych dwóch. Przeważająca większość obiektów, które dotarły do pokolenia 2 będą osiągalne przez długi czas, zatem kiedy w końcu staną się nieosiągalne, to taki obiekt będzie już stary, podobnie jak wszystkie inne obiekty umieszczone w jego otoczeniu. Oznacza to, że scalanie tego obszaru sterty będzie kosztowne. Za takim obiektem najprawdopodobniej będzie umieszczonych wiele innych, powodując to konieczność przeniesienia znacznej liczby danych.
 ### Działanie mechanizmu
 1. Mechanizm określa do których obiektów można dotrzeć używając listy referencji głównych istniejących we wszystkich wątkach.
 1. Sprawdza kolejno każdą referencję i jeśli jest ona różna od null, to uznaje, że obiekt, do którego się ona odwołuje jest osiągalny.
@@ -409,9 +416,22 @@ Console.WriteLine(studentP.GetClassInfo()); // Person
 1. Oznacza to, że jeśli obiekt jest osiągalny, to osiągalne są także wszystkie inne obiekty, których referencje są w nim przechowywane.
 1. Mechanizm jest powtarzany tak długo, aż wyczerpie się lista referencji, które należy sprawdzić
 jeśli obiekt do którego nie udało się dotrzeć w tym procesie, jest uznawany za nieosiągalny.
+### Sterta dużych obiektów (*large heap object*)
+- CLR używa jej do przechowywania obiektów o wielkości powyżej 85k bajtów. Chociaż .NET Core umożliwia konfigurację tego.
+- Mechanizm odzyskiwania pamięci nie scala LOH- kopiowanie dużych obiektów jest kosztowne.
+- CLR przechowuje listę wolnych bloków pamięci i decyduje, którego z nich użyć na podstawie wielkości żądanego bloku. Niemniej jednak lista wolnych bloków jest tworzona z wykorzystaniem tego samego mechanizmu bazującego na osiągalności obiektów, który jest używany do obsługi normalnej sterty.
+### Tryby odzyskiwania pamięci
+Dwa tryby:
+- stacji roboczej (aplikacje konsolowe, aplikacje z graficznym interfejsem użytkownika)
+- serwerowy (aplikacje sieciowe)
 
-https://www.geeksforgeeks.org/garbage-collection-in-c-sharp-dot-net-framework/
-
+Plus każdy z nich może działać w dwóch kategoriach:
+- w tle - mechanizm odzyskiwania pamięci stara się zminimalizować czas, na jaki według jego szacunków wątki będą zawieszane podczas trwania procedury odzyskiwania
+- niewspółbieżny - został zaprojektowany w celu optymalizacji przepustowości na komputerach z jednym procesorem jednordzeniowym. Powoduje on mniejsze zużycie procesora i pamięci niż w trybie w tle.
+### Tymczasowe zawieszanie odzyskiwania
+Klasa GC udostępnia metodę `TryStartNoGCRegion`, która jest wywołana w celu zaznaczenia, że właśnie rozpoczyna się realizacja jakiś operacji, których nie należy przerywać odzyskiwaniem pamięci. W wywołaniu tej metody należy przekazać liczbę określającą wielkość pamięci, która będzie potrzebna podczas wykonywania tych operacji, a metoda spróbuje zadbać, by przed rozpoczęciem operacji ta ilość pamięci faktycznie była dostępna (w razie konieczności może to oznaczać wykonanie odzyskiwania w celu zwolnienia odpowiedniej liczby pamięci). Po zakończeniu krytycznej sekcji kodu należy wywołać metodę `EndNoGCRegion`, dzięki czemu mechanizm odzyskiwania pamięci będzie mógł wrócić do normalnego sposobu działania. Jeśli w trakcie trwania sekcji krytycznej, kod zużyje więcej pamięci niż zdeklarowano, CLR będzie musiało przeprowadzić odzyskiwanie pamięci.
+## Słabe referencje (*weak references*)
+Takich referencji mechanizm odzyskiwania pamięci nie analizuje, a zatem jeśli jedynym sposobem dotarcia do obiektu jest życie słabej referencji, to mechanizm odzyskiwania pamięci zachowa się tak, jakby obiekt nie był osiągalny. W efekcie zostanie on usunięty. Innymi słowy, słaba referencja pozwala przekazać CLR następującą informację: nie trzymaj obiektu w pamięci z mojego powodu.
 ## IDisposable
 - wykorzystywany przy reprezentowaniu zasobów spoza CLR, takich jak:
     - połączenia z bazą danych
