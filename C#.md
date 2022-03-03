@@ -14,7 +14,7 @@ Każda funkcja jest kompilowana przed uruchomieniem programu.
 ## Wartościowe
 - `int`, `long`, `float`, `double`, `byte`, `char`, `bool`, `DateTime`, typy wyliczeniowe - enum, struktury
 - dziedziczą z `System.ValueType`, który dziedziczy `System.Object`
-- obiekt umieszczany na stosie (*heap*)
+- obiekt umieszczany na stosie (*stack*)
 - przekazywanie przez wartości do funkcji
 - nie zmieniają swojej wielkości
 - kopiowanie poprzez operator przypisania (`=`)
@@ -33,7 +33,7 @@ Każda funkcja jest kompilowana przed uruchomieniem programu.
 - `string`, klasy, delegacje, tablice
 - zmienne tego typu nie przechowują samych instancji klasy, lecz referencje do nich
 - dziedziczą z `System.Object`
-- obiekt umieszczany na stercie (*stack*), referencja do obiektu umieszczana na stosie
+- obiekt umieszczany na stercie (*heap*), referencja do obiektu umieszczana na stosie
 - przekazywanie referencji do funkcji
 - mogą zmieniać swoja wielkość
 ## Kiedy używać referencyjnych, a kiedy wartościowych?
