@@ -30,5 +30,7 @@ Daje dostęp do node po wyspecyfikowanym porcie i następnie przekierowywuje to 
 ### LoadBalancer
 Daje dostęp do serwisu z zewnątrz. 
 
+![image](./assets/kubernetes/services.jpg)
+
 ## Ingress
 Eksponuje HTTP i HTTPS z zewnątrz klastra do serwisów wewnątrz klastra. Działa jako reverse proxy usług, równoważąc żądania między różnymi usługami działającymi na różnych węzłach.
