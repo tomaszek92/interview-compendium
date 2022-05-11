@@ -18,6 +18,108 @@ Pod to mała i proste jednostka, która działa jako pojedyncza instancja aplika
 ## Depolyment
 Służy do definiowania sposobu wdrażania podów: jakiego obrazu powinny używać, liczby uruchomionych replik, zużywanych zasobów, sposobu wdrożenia nowej wersji itp. Reprezentują pożądany stan klastra.
 
+### Sondy (*probe*)
+#### Startup
+Służy to wykrywania czy aplikacja jest uruchomiona. Jeśli tylko zostanie zwrócny sukces, to Kubernetes zaczyna używać liveness to zidentyfikowania czy aplikacja żyje.
+
+Jest to pierwszy probe, który jest uruchamiany. Kiedy aplikacja startuje może być potrzeba wykonania dużej ilości pracy. Podczas tego procesu, aplikacja nie powinna przyjmować zapyta. Kiedy tylko aplikacja wystartuje i startup probe zwróci sukces, to już więcej nie wywołuje ten sondy. Jeśli startup nigdy nie zwróci sukcesu, to Kubernetes ubija kontener i podlega polityce restartu poda.
+
+##### Przykład
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-app-api-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        app: test-app-api
+    spec:
+      containers:
+      - name: test-app-api
+        image: andrewlock/my-test-api:0.1.1
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 80
+          failureThreshold: 30
+          periodSeconds: 10
+```
+Sonda jest zdefiniowana w `startupProbe` i wywołuje adres URL `/health/startup` na porcie `80`. Sonda powinna zostać wypróbowana 30 razy przed niepowodzeniem, z 10-sekundowym okresem oczekiwania pomiędzy sprawdzaniami. W tym przykładzie, maksymalny czas oczekiwania na uruchomienie się kontenera to 300 sekund.
+
+#### Livness
+Słłuży do wykrywania czy aplikacja działa. Jeśli zwróci błąd, to Kubernester zatrzyma kontener i stworzy nowy.
+
+##### Przykład
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-app-api-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        app: test-app-api
+    spec:
+      containers:
+      - name: test-app-api
+        image: andrewlock/my-test-api:0.1.1
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+```
+Sonda jest zdefiniowana w `livenessProbe` i wywołuje adres URL `/healthz` na porcie `80`. 
+
+#### Readiness
+Służy do wykrywania czy aplikacja jest gotowa do przyjmowania zapytań. Jeśli zwróci błąd, to Kubernetes zostawi działający kontener, ale nie będzie wysyłał do niego zapytań.
+
+##### Przykład
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-app-api-deployment
+spec:
+  template:
+    metadata:
+      labels:
+        app: test-app-api
+    spec:
+      containers:
+      - name: test-app-api
+        image: andrewlock/my-test-api:0.1.1
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          successThreshold: 3
+```
+Sonda jest zdefiniowana w `redinessProbe` i wywołuje adres URL `/ready` na porcie `80`. 
+
+#### Konfiguracja
+- `initialDelaySeconds`- liczba sekund po uruchomieniu kontenera przed zainicjowaniem sond. Domyślnie 0 sekund. Minimalna wartość to 0. 
+- `periodSeconds`- jak często (w sekundach) przeprowadzać sondowanie. Domyślnie 10 sekund. Minimalna wartość to 1. 
+- `timeoutSeconds`- liczba sekund, po których następuje timeout. Domyślnie 1 sekunda. Minimalna wartość to 1. 
+- `successThreshold`- minimalna liczba kolejnych sukcesów, aby sonda została uznana za udaną po niepowodzeniu. Wartością domyślną jest 1. Musi być 1 dla liveness i startup. Minimalna wartość to 1. 
+- `failureThreshold`- gdy sonda nie powiedzie się, Kubernetes spróbuje tyle razy przed poddaniem się. Domyślnie 3. Minimalna wartość to 1.
+
+#### Cykl sond
+![image](/assets/kubernetes/probes.svg)
+
+> Zazwyczaj sondowanie odbywa się przy pomocy HTTP. Jeśli endpoint zwraca kod od 200 do 399, to jest sukces. Cokolwiek innego jest traktowane jako błąd. Jest możliwość na używanie również TCP czy gRPC.
+
+#### Jak używac sond?
+1. Używaj smart startup- sprawdzanie czy są gotowe połączenia do bazy/kolejki czy wszystkie zadania do uruchomienia aplikacji zakończyły się
+1. Używaj dumb liveness- sprawdzenie powinno być szybkie, bo jest często wywoływane.
+1. Używaj smart/dumb readiness- sprawdzenie powinno być w miarę szybkie, przykładowo czy nadal istnieje połaczenie do bazy/kolejki.
+
 ## Service
 Opisuje sposób komunikacji pomiędzy podami.
 
