@@ -277,6 +277,43 @@ Daje dostęp do serwisu z zewnątrz używając chumorowego load balancera dostaw
 
 ![image](./assets/kubernetes/services.jpg)
 
+## ConfigMap
+Pozwala na przechowywanie konfiguracji (para klucz wartość). Następnie tych wartości można używać w podach jako konkretne klucze (wybierając które) lub całe zbiory. Nazwa config mapy musi być zgodna z nazwą subdomeny DNS.
+
+Przykład:
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+data:
+  player_initial_lives: "3"
+  ui_properties_file_name: "user-interface.properties" 
+```
+
+## PersistentVolumeClaim
+Po usunięciu czy restarcie poda, wszystkie informacja na nim zapisane są tracone. `PersistentVolume` umożliwia zachowanie informacji.
+
+Przykład:
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+```
+
+### Tryby dostępu
+- `ReadWriteOnce` - wolumen może być zamontowany jako do odczytu i zapisu przez jeden węzeł
+- `ReadOnlyMany` - wolumen może być zamontowany jako do odczytu przez wiele węzłów
+- `ReadWriteMany` - wolumen może być zamontowany jako do odczytu i zapis przez wiele węzłów
+
 ## Ingress
 Pozwala światu zewnętrznemu na dostęp do zasobów klastra. Dla przykładu każdy naszych deploymentów może mieć serwis typu LoadBalancer która udostępnia adres IP na zewnątrz i zarządza dostępem do podów. Jednak taki LoadBalancer wymaga adresu by się do niego dostać. Weźmy 5-6 takich mikroserwisów z LoadBalancerem i mamy 5-6 adresów API do zarządzania.
 
