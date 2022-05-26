@@ -448,6 +448,10 @@ Obiekty udostępniające referencję do metody, przy czym może to być metoda s
 - `void Action <in T>(T arg)`
 - `TResult Func<out TResult, int T>(T arg)`
 
+# Wydaje używanie pamięci
+## Span\<T>
+## Memory\<T>
+
 # Pytania
 ## Checked oraz unchecked
 Słowa `unchecked` oraz `checked` służą do kontrolowania czy nie nastąpił overflow podczas operacji arytmetycznych. Wszystkie niepoprawne operacje w klauzuli `checked` wywołają wyjątek overflow, ponieważ podczas wykonywania obliczeń sprawdzane jest czy wynik wciąż się mieści w zmiennej

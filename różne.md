@@ -1,3 +1,15 @@
+# GIT
+## Merge
+Powstaje "commit scalenia", który będzie łączył historie obydwu gałęzi, dzięki czemu struktura gałęzi będzie wyglądała następująco:
+![image](./assets/git/merge.svg|width=100px)
+
+## Rebase
+Powoduje przesunięcie całej gałęzi `feature`, aby zaczynała się od końcówki gałęzi `main`. Pozwoli to na skuteczne włączenie wszystkich nowych commitów do gałęzi `main`. Jednak zamiast tworzenia "commita scalenia", operacja powoduje przepisanie historii projektu poprzez utworzenie zupełnie nowych commitów dla każdego commita w gałęzi pierwotnej.
+![image](./assets/git/rebase.svg|width=100px)
+
+# HTTP
+
+
 # REST
 - Jednolity interfejs – dla realizacji konkretnego działania jest tylko jedna droga dojścia.
 - Bezstanowość – bez względu na to jakie wcześniej operacje zostały wykonane, to zawsze każda kolejna operacja nie będzie zmieniała rezultatu dla innej.
