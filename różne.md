@@ -1,6 +1,9 @@
 # REST
 - Jednolity interfejs – dla realizacji konkretnego działania jest tylko jedna droga dojścia.
 - Bezstanowość – bez względu na to jakie wcześniej operacje zostały wykonane, to zawsze każda kolejna operacja nie będzie zmieniała rezultatu dla innej.
+- Podział na aplikacje klient-serwer - rozdzielenie aplikacji pozwala na ich niezależny rozwój i działanie. Taki podział zdecydowanie zwiększa możliwości skalowania, przenośności i rozszerzalność, a obsługa błędów jest znacznie łatwiejsza.
+- Cache danych - wykorzystanie mechanizmu przeglądarek lokalnie „zapamiętujących” odpowiedzi serwera w celu zmniejszenia obciążenie sieciowe.
+- Odseparowane warstwy - komunikacja i wymiana danych między aplikacjami klienckimi, a API nie powinna być obciążona informacjami o zewnętrznych serwisach i usługach, z których serwer korzysta.
 ## Metody
 ### GET
 - Pobieranie zasobu.
