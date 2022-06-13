@@ -108,3 +108,41 @@ Dane istnieją dopóki nie zostaną usunięte jawnie (`localStorage.removeItem('
 
 # Session storage
 Dane istnieją w ramach sesji (karta w przeglądarce). Po zakończeniu sesji są usuwane.
+
+# Kolejki
+## Outbox pattern
+Ten wzorzec zapewnia, że ​​wiadomość została pomyślnie wysłana (np. do kolejki) przynajmniej raz. Dzięki temu wzorcowi zamiast bezpośrednio publikować wiadomość do kolejki, przechowujemy ją w magazynie tymczasowym (np. w tabeli bazy danych). Opakowujemy zapisywanie encji i przechowywanie wiadomości jednostką pracy (transakcja). Mając zapisane takie zdarzenia możemy zrobić proces działający w tle, który będzie sprawdzał czy w tabeli są jakieś zdarzenia, które nie zostały jeszcze wysłane. Jeśli takie znajdzie to próbuje je wysłać i po tym jak dostanie potwierdzenie o sukcesie wysłania (np. ACK z kolejki) to oznacza zdarzenie jako wysłane. Dlaczego więc zapewnia at-least-once, a nie exactly-once? Bo zapis do bazy może się nie powieźć (np. nie będzie odpowiadała), wtedy proces obsługujący outbox pattern spróbuje za jakiś czas ponownie wysłać zdarzenie i będzie próbował to robić dopóki nie zostanie zapisana poprawnie zdarzenie oznaczone jako wysłane.
+
+## Inbox pattern
+Ten wzorzec zapewnia, że ​​wiadomość została pomyślnie wysłana (np. do kolejki) przynajmniej raz. Dzięki temu wzorcowi po otrzymaniu wiadomości z kolejki jest ona od razu zapisywana w bazie i jest wysyłwany ACK. Mając zapisane takie zdarzenia możemy zrobić proces działający w tle, który będzie sprawdzał czy w tabeli są jakieś zdarzenia, które nie zostały jeszcze obsłużone. Zaletą dodatkowej tabeli jest to, że możemy szybko przyjąć zdarzenia z szyny, a potem w dogodnym tempie i czasie przeprocesować je wewnętrznie nie ryzykując, że szyna padnie
+
+## RabbitMQ
+- **Producent**: aplikacja, która wysyła wiadomość.
+- **Konsumer**: aplikacja, któr przyjmuje wiadomość.
+- **Kolejka**: bufor, który przechowuje nieobsłużone wiadomości.
+- **Wiadomość**: informacja, która jest przesyłana pomiędzy producentem, a konsumerem.
+- **Połączenie**: połącznie TCP pomiędzy aplikacją, a Rabbitem.
+- **Kanał**: wirtualne połączenie do kolejki, dzięki któremy zyskujemy odsperawane połaczenia na jednym połączeniu TCP.
+- **Exchange**: otrzymyje wiadomości od producenta i przekazuje jest do kolejeki w zależności od zdefiniowanych reguł. Aby kolejka otrzymała wiadomość musi być połaczona z exchange.
+- **Binding**: połączenie między kolejką, a exchange.
+- **Routing key**: klucz, który definiuje czy wiadomość ma trafić do kolejki. Można to porównać do adresu dla wiadomości pod który ma trafić.
+- **AMQP (Advanced Message Queuing Protocol)**: protokół używany przez RabbitMQ.
+- **Użytkownik**: aby połączyć się do kolejki RabbitMQ potrzebujemy użytkownika i hasła. Każdy użytkownik może mieć przypisane odpowiednie uprawnienia takie jak odczyt czy zapis.
+- **Vhost (virtual host)**: umożliwia separację aplikacji w jednej instancji RabbitMQ.
+
+### Schemat działania
+1. Producent publikuję wiadomość do exchange. Kiedy tworzy się exchange, typ exchange musi być podany.
+1. Exchange otrzymuje wiadomość i przekierowuje wiadomość do odpowiednich kolejek w zależności o zdefiniowanego routing key i podłączonych kolejek.
+1. Wiadomość zostaje w kolejce dopóki nie zostanie przeprocesowana przez konsumera.
+
+### Typy exchange
+<img src="./assets/rabbitmq/exchanges-topic-fanout-direct.png" height="300">
+
+#### Direct
+Wiadomość jest kierowana do kolejek, których binding key idealnie pasuje do routing key wiadomości. Przykładowo, jeśli kolejka jest połączona z exchange przy pomocy binding `pdfprocess`, wiadomość została opublikowana do exchange z routing key `pdfprocess`, wtedy wiadomość zostanie przekaza do kolejki.
+#### Topic
+Używa wzorca, który jest zdefiniowany w połączeniu kolejek do exchange i następnie sprawdza do których z nich pasuje routing key. Jeśli pasuje, to do tej kolejki jest wysyłana wiadomość (może zostać wysłana do wielu kolejek).
+#### Fanout
+Exchange przekujze wiadomości do wszystkich kolejek, które są z nim połączone.
+#### Headers
+Używa nagłówka do routingu.
