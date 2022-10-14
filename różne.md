@@ -15,6 +15,10 @@ Pobieranie zmian ze zdalnego repozytorium – wszystkie nowe dane z commitów, k
 ## pull
 Pobieranie (`fetch`) i integrowanie (`merge`) zdalnych zmian.
 
+# Uwierzytelnianie vs Autoryzacja (Authentication vs Authorization)
+- Uwierzytelnianie to potwierdzenie, że jesteśmy tym, za kogo się podajemy, czyli inaczej to ujmując, potwierdzenie swojej tożsamości. Najczęściej możemy je spotkać podczas logowania do dowolnego systemu.
+- Autoryzacja to proces określania uprawnień danego podmiotu. Inaczej mówiąc autoryzacja pozwala na stwierdzenie czy dany podmiot (np. osoba) posiada dostęp do danego zasobu (np. folderu, pomieszczenia).
+- 
 # HTTP
 Protokół warstwy aplikacji, odpowiedzialny za transmisję dokumentów hipermedialnych, np. HTML. Został stworzony do komunikacji pomiędzy przeglądarkami, a serwerami webowymi, ale może być używany również w innych celach. HTTP opiera się na klasycznym modelu klient-serwer, gdzie klient inicjuje połączenie poprzez wysłanie żądania, następnie czeka na odpowiedź. HTTP jest protokołem bezstanowym, co oznacza, że serwer nie przechowuje żadnych danych (stanów) pomiędzy oboma żądaniami. Często opiera się na warstwie TCP/IP, może używać także UDP.
 
