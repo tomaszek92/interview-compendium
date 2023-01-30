@@ -72,7 +72,7 @@ Orkiestracja to sposób koordynowania sag, w których scentralizowany kontroler 
 - Dodatkowa złożoność projektowania wymaga implementacji logiki koordynacji.
 - Występuje dodatkowy punkt awarii, ponieważ koordynator zarządza kompletnym przepływem pracy.
 
-### Kiedy używać tego wzorca
+### Kiedy używać
 Użyj wzorca Saga, jeśli musisz:
 - Zapewnienia jednoznaczności danych w systemie rozproszonym bez mocnego powiązania.
 - Wycofania lub rekompensaty, jeśli jedna z operacji w sekwencji nie powiedzie się.
@@ -101,4 +101,40 @@ Można go zaimplementować przy użyciu sondowania HTTP. Sondowanie jest przydat
 1. W pewnym momencie praca jest ukończona, a punkt końcowy stanu zwraca 302 (znaleziono) przekierowanie do zasobu.
 1. Klient pobiera zasób pod określonym adresem URL.
 
-Maszyna 
+### Kiedy używać
+Użyj tego wzoru do:
+- Kod po stronie klienta, taki jak przeglądarki, w przypadku których trudno jest zapewnić punkty końcowe wywołania zwrotnego lub korzystanie z długotrwałych połączeń powoduje zbyt dużą złożoność.
+- Wywołania usługi, w których dostępny jest tylko protokół HTTP, a usługa zwrotna nie może uruchamiać wywołań zwrotnych z powodu ograniczeń zapory po stronie klienta.
+- Wywołania usług, które muszą być zintegrowane ze starszymi architekturami, które nie obsługują nowoczesnych technologii wywołań zwrotnych, takich jak WebSockets lub webhook.
+
+Ten wzór może nie być odpowiedni, gdy:
+- Zamiast tego możesz użyć usługi utworzonej dla powiadomień asynchronicznych, takiej jak Azure Event Grid.
+- Odpowiedzi muszą być przesyłane strumieniowo do klienta w czasie rzeczywistym.
+- Klient musi zebrać wiele wyników, a otrzymane opóźnienie tych wyników jest ważne.
+- Możesz używać trwałych połączeń sieciowych po stronie serwera, takich jak WebSockets lub SignalR. Usługi te mogą służyć do powiadamiania dzwoniącego o wyniku.
+
+## Anit-corruption layer
+To zestaw wzorców umieszczonych między modelem domeny a innymi ograniczonymi kontekstami lub zależnościami stron trzecich. Celem tej warstwy jest zapobieganie wtargnięciu obcych koncepcji i modeli do modelu domeny. Ta warstwa zazwyczaj składa się z kilku dobrze znanych wzorców projektowych, takich jak Fasada i Adapter. Wzorce są używane do mapowania modeli domeny obcej i interfejsów API na typy i interfejsy, które są częścią modelu domeny.
+
+### Rozwiązanie
+Odizoluj różne podsystemy, umieszczając między nimi warstwę antykorupcyjną. Warstwa ta przekłada komunikację między dwoma systemami, pozwalając jednemu systemowi pozostać niezmienionym, podczas gdy drugi może uniknąć narażania swojego projektu i podejścia technologicznego.
+![image](/assets/mikroserwisy/anti-corruption-layer.png)
+Powyższy diagram przedstawia aplikację z dwoma podsystemami. Podsystem A wywołuje podsystem B poprzez warstwę antykorupcyjną. Komunikacja między podsystemem A a warstwą antykorupcyjną zawsze wykorzystuje model danych i architekturę podsystemu A. Wywołania z warstwy antykorupcyjnej do podsystemu B są zgodne z modelem danych lub metodami tego podsystemu. Warstwa antykorupcyjna zawiera całą logikę niezbędną do tłumaczenia między dwoma systemami. Warstwa może być zaimplementowana jako komponent w aplikacji lub jako niezależna usługa.
+
+### Kiedy używać
+- Migracja jest planowana na wiele etapów, ale należy zachować integrację między nowymi i starszymi systemami.
+- Co najmniej dwa podsystemy mają różną semantykę, ale nadal muszą się komunikować.
+- Ten wzorzec może nie być odpowiedni, jeśli nie ma znaczących różnic semantycznych między nowymi i starszymi systemami.
+
+## Circuit Breaker
+Wzorzec Circuit Breaker, może zapobiec wielokrotnym próbom wykonania przez aplikację operacji, która prawdopodobnie zakończy się niepowodzeniem. Wzorzec ten umożliwia również aplikacji wykrycie, czy usterka została rozwiązana. Jeśli wydaje się, że problem został rozwiązany, aplikacja może spróbować wywołać operację.
+Wzorzec działa jako serwer proxy dla operacji, które mogą zakończyć się niepowodzeniem. Serwer proxy powinien monitorować liczbę ostatnich błędów, które wystąpiły i na podstawie tych informacji decydować, czy zezwolić na kontynuację operacji, czy po prostu natychmiast zwrócić wyjątek.
+![image](/assets/mikroserwisy/circuit-breaker-diagram.png)
+
+### Kiedy używać
+Użyj tego wzoru:
+- Aby zapobiec próbie wywołania usługi zdalnej lub uzyskania dostępu do udostępnionego zasobu przez aplikację, jeśli istnieje duże prawdopodobieństwo niepowodzenia tej operacji.
+
+Ten wzór nie jest zalecany:
+- Do obsługi dostępu do lokalnych zasobów prywatnych w aplikacji, takich jak struktura danych w pamięci. W takim środowisku użycie wyłącznika zwiększyłoby obciążenie systemu.
+- Jako substytut obsługi wyjątków w logice biznesowej Twoich aplikacji.
