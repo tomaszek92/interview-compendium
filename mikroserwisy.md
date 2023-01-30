@@ -1,14 +1,14 @@
 # Zalety
-## Coraz dłuższy czas tworzenia nowych funkcjonalności
-W systemach monolitycznych istnieje wiele warstw, przez które trzeba się przebijać, aby realizować nowe funkcjonalności. Okazuje się, że stworzenie osobnego programu realizującego założone funkcjonalności jest często znacznie szybsze niż do implementowanie kodu w architekturze monolitycznej. Znalezienie odpowiedniego miejsca w kodzie, spełnienie wymagań interfejsów pośrednich i przejście do warstwy widoku jest coraz trudniejsze i rośnie w miarę rośnięcia złożoności kodu. Dlatego rozwiązaniem jest pisanie małych programów z interfejsem do komunikacji.
+## Krótszy czas tworzenia nowych funkcjonalności
+W systemach monolitycznych istnieje wiele warstw, przez które trzeba się przebijać, aby realizować nowe funkcjonalności. Okazuje się, że stworzenie osobnego programu realizującego założone funkcjonalności jest często znacznie szybsze niż implementowanie kodu w architekturze monolitycznej. Znalezienie odpowiedniego miejsca w kodzie, spełnienie wymagań interfejsów pośrednich i przejście do warstwy widoku jest coraz trudniejsze i rośnie w miarę rośnięcia złożoności kodu. Dlatego rozwiązaniem jest pisanie małych programów z interfejsem do komunikacji.
 ## Chodząca dokumentacja
 W ferworze tworzenia oprogramowania często zapomina się o dokumentacji. Nawet jeśli stara się nadążyć z dokumentacja, to trudno ja utrzymać, tak aby była zrozumiała i pełna. Głównie wiedza na temat projektu, odpowiedzialności, powiazań, uruchomienia, wdrożenia i pozostałych rzeczy jest przechowywana w pamięci programistów. Problem się pojawia, kiedy kluczowy programista się zwolni, zachoruje lub napotka go inny losowy przypadek.  Rozwiązaniem jest tworzenie małych programów. Ponieważ każdy zespół realizuje na tyle małą i komplementarną aplikacje, że przekazanie wiedzy na jej temat jest szybkie i bezproblemowe.
-## Problem w skalowaniu aplikacji
+## Brak problemu w skalowaniu aplikacji
 Aplikacja monolityczna ciężko się skaluje. Zazwyczaj odbywa się poprzez skalowanie jej całej – co jest bardzo kosztowne. W przypadku mikroarchitektury możemy skalować tylko ten serwis, który jest pod największym obciążeniem. Redukuje to znacznie koszty utrzymania.
 ## Trudność w migracji technologii 
 Kiedy tworzona jest aplikacja monolityczna, to z góry zespoły mają narzucony stack technologiczny. Trudno jest później migrować rozwiązanie, lub nawet aktualizować wersje języków, frameworków czy bibliotek. W przypadku rozwiązania opartego na mikroarchitekturze, to wybór narzędzi jest dobrowolny dla każdego serwisu. Można zastosować różne języki programowania (dobrane według potrzeb danego projektu). Bez większego problemu można również aktualizować technologie w ramach serwisu, bez obawy, że będzie to miało impakt na cały system.
 ## Mniej kosztowne błędy
-Czasem jeden ze serwisów jest błędnie napisany, lub wymaga zmian. W przypadku mikroarchitekury nie wiąże się z tak dużymi kosztami wzięcie serwisu, wyrzucenie go do kosza i przepisanie na nowo. Tak samo można (brutalnie, ale można) podejść do całego zespołu. Zwolnić cały zespół, jeśli nam nie odpowiada i zaangażować zupełnie nowy. Sprzyja to też outsourcingowi specjalistów.
+Czasem jeden ze serwisów jest błędnie napisany, lub wymaga zmian. W przypadku mikroarchitekury nie wiąże się z tak dużymi kosztami- wzięcie serwisu, wyrzucenie go do kosza i przepisanie na nowo. Tak samo można (brutalnie, ale można) podejść do całego zespołu. Zwolnić cały zespół, jeśli nam nie odpowiada i zaangażować zupełnie nowy. Sprzyja to też outsourcingowi specjalistów.
 
 # Wady
 # Spójności danych 
@@ -23,13 +23,12 @@ Każdy mikroserwis może mieć swoją bazę danych czy inne elementy, które są
 Coś co jest pluem, może przeobraźić się w minus. Niech jeden z mikroserwisów będzie napisany w innym stosie techonologicznym niż pozostałe. Wyobraźmy sobie sytację, że odchodzi osoba, która rozwijała ten mikroserwis. Pozostałe osoby nie znają technologii i mogą mieć problem z utrzymaniem tego mikroserwisu.
 
 # Jak dzielić mikroserwisy?
-Rozpocznij od określenia granic kontekstu (`boundex context`). W ogólności, funkcjonalność w mikroserwisie nie powinna obejmować więcej niż jednego granicznego kontekstu. Z definicji graniczny kontekst określa granicę danego modelu domeny. Jeśli zauważysz, że mikroserwis łączy razem różne modele domenowe, to jest to oznaka, że może trzeba powrócić i udoskonalić analizę domeny.
+Rozpocznij od określenia granic kontekstu. W ogólności, funkcjonalność w mikroserwisie nie powinna obejmować więcej niż jednego granicznego kontekstu. Z definicji graniczny kontekst określa granicę danego modelu domeny. Jeśli zauważysz, że mikroserwis łączy razem różne modele domenowe, to jest to oznaka, że może trzeba powrócić i udoskonalić analizę domeny.
 
 Następnie zwróć uwagę na agregaty w swoim modelu domeny. Agregaty często są dobrymi kandydatami na mikroserwisy. Dobrze zaprojektowany agregat wykazuje wiele cech dobrze zaprojektowanego mikroserwisu, takich jak:
 - Agregat jest wyodrębniany z wymagań biznesowych, a nie z kontekstów technicznych, takich jak dostęp do danych czy komunikacja.
 - Agregat powinien mieć wysoką funkcjonalną spójność.
 - Agregat jest granicą trwałości.
-- Agregaty powinny być słabo powiązane
 
 Usługi domenowe (`domain services`) są również dobrymi kandydatami na mikroserwisy. Usługi domenowe to bezstanowe operacje wielu agregatów. Typowym przykładem jest proces biznesowy, który obejmuje kilka mikroserwisów.
 
@@ -37,7 +36,7 @@ Na koniec rozważ wymagania niefunkcjonalne. Zwróć uwagę na czynniki, takie j
 
 Po zidentyfikowaniu mikroserwisów w aplikacji, sprawdź swój projekt pod kątem następujących kryteriów:
 - Każdy serwis ma jedną odpowiedzialność.
-- Nie ma rozmownych połączeń między serwisami. Jeśli podzielenie funkcjonalności na dwa serwisy powoduje, że są one nadmiernie rozmowne, może to być symptomem tego, że te funkcje należą do tego samego serwisu.
+- Nie ma "rozmownych" połączeń między serwisami. Jeśli podzielenie funkcjonalności na dwa serwisy powoduje, że są one nadmiernie "rozmowne", może to być symptomem tego, że te funkcje należą do tego samego serwisu.
 - Każdy serwis jest wystarczająco mały, aby można było go napisać i utrzymywać przez mały zespół pracujący niezależnie.
 - Nie ma wzajemnych zależności, które wymagałyby wdrożenia dwóch lub więcej serwisów jednocześnie. Zawsze powinno być możliwe wdrożenie serwisu bez przebudowy innych serwisów.
 - Serwisy nie są mocno powiązane i mogą ewoluować niezależnie.
