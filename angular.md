@@ -318,5 +318,23 @@ In `Subject` and `ReplaySubject`, you cannot set the initial value to observable
 - **You can set initial value**: You can initialize the observable with a default value.
 
 ## switchMap
+Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.
+
+`switchMap` in RxJS only cares about the latest value that the observable emitted, in this case cancelling any previous HTTP requests that were still in progress.
+
+A good use case for `switchMap` would be an autocomplete input, where we should discard all but the latest results from the user’s input.
+
+![image](/assets/angular/switchMap.png)
+
+
 ## mergeMap
+Projects each source value to an Observable which is merged in the output Observable.
+
+`mergeMap` in RxJS passes all requests through, even when a new request was made before a previous one had finished.
+
+![image](/assets/angular/mergeMap.png)
+
 ## concatMap
+Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
+
+![image](/assets/angular/concatMap.png)
