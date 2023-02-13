@@ -23,7 +23,7 @@ Każdy mikroserwis może mieć swoją bazę danych czy inne elementy, które są
 Coś co jest pluem, może przeobraźić się w minus. Niech jeden z mikroserwisów będzie napisany w innym stosie techonologicznym niż pozostałe. Wyobraźmy sobie sytację, że odchodzi osoba, która rozwijała ten mikroserwis. Pozostałe osoby nie znają technologii i mogą mieć problem z utrzymaniem tego mikroserwisu.
 
 # Jak dzielić mikroserwisy?
-Rozpocznij od określenia granic kontekstu. W ogólności, funkcjonalność w mikroserwisie nie powinna obejmować więcej niż jednego granicznego kontekstu. Z definicji graniczny kontekst określa granicę danego modelu domeny. Jeśli zauważysz, że mikroserwis łączy razem różne modele domenowe, to jest to oznaka, że może trzeba powrócić i udoskonalić analizę domeny.
+Rozpocznij od określenia granic kontekstu. W ogólności, funkcjonalność w mikroserwisie nie powinna obejmować więcej niż jednego ogranicznego kontekstu. Z definicji ograniczny kontekst określa granicę danego modelu domeny. Jeśli zauważysz, że mikroserwis łączy razem różne modele domenowe, to jest to oznaka, że może trzeba powrócić i udoskonalić analizę domeny.
 
 Następnie zwróć uwagę na agregaty w swoim modelu domeny. Agregaty często są dobrymi kandydatami na mikroserwisy. Dobrze zaprojektowany agregat wykazuje wiele cech dobrze zaprojektowanego mikroserwisu, takich jak:
 - Agregat jest wyodrębniany z wymagań biznesowych, a nie z kontekstów technicznych, takich jak dostęp do danych czy komunikacja.
