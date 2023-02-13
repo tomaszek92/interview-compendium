@@ -82,3 +82,42 @@ Głównym celem fabryk, albo mówiąc inaczej metod wytwórczych jest uproszczen
 
 ## Zdarzenie domenowe (*domain event*)
 Są odpowiedzialne za powiadamianie całej naszej domeny o tym, że coś interesującego się wydarzyło. Inna część aplikacji może nasłuchiwać na konkretne wydarzenie i zareagować na nie. Agregaty lub Encje publikują zdarzenia — każda metoda, która zmienia stan systemu, może publikować zdarzenia domenowe.
+
+# Event storming
+Event Storming jest metodą odkrywania i konkretyzowania informacji o domenie biznesowej, w ramach której wytwarzane jest oprogramowanie.
+
+## Kto bierze udział
+- eksperci techniczni, jak np. programiści, analitycy, czy właściciele produktu (PO),
+- eksperci domenowi ze strony klienta/biznesu,
+- koordynator - osoba zaznajomiona z techniką Event Stormingu, dbająca o sprawny i prawidłowy przebieg warsztatu.
+
+## Przebieg
+Jest to zazwyczaj kilkugodzinny warsztat. Sama forma warsztatu wydaje się dość prosta – do dyspozycji mamy dużą tablicę czy ścianę oraz mnóstwo różnokolorowych karteczek. Każdy z uczestników identyfikuje zdarzenia („Domain Events”), które występują w trakcie działania programu – np. „Utworzono konto użytkownika”, „Zamówiono towar”, czy „Wygenerowano fakturę”. Zdarzenia te zapisuje się na karteczkach i umieszcza na tablicy.
+
+Jak zapewne można zauważyć, powyższe przykłady zdarzeń to bardzo ogólne pojęcia. Podczas Event Stormingu staramy się nie korzystać ze słownictwa fachowego i języka ściśle specjalistycznego. Celem jest, aby każdy rozumiał każdego, a używane określenia funkcjonowały w ramach danej domeny biznesowej.
+
+Powyższe zdarzenia domenowe stanowią punkt wyjścia do dalszych pytań – co należy zrobić, aby miało miejsce zdarzenie „Utworzono konto użytkownika”? Program musi otrzymać sygnał, czyli musi być przekazana komenda („Command”) taka, jak np. „Utwórz konto”. Ale kto lub co jest źródłem takiej komendy? Czy to użytkownik sam tworzy swoje konto, poprzez rejestrację? Czy może konto użytkownika generowane jest automatycznie, na podstawie informacji otrzymanych z systemu zewnętrznego? I tu dochodzimy do kolejnego elementu identyfikowanego podczas warsztatu, którym są tzw. aktorzy („Actors”) wywołujący daną komendę.
+
+Ustalenia dotyczące komend i aktorów też trzeba jakoś zapisać. Oczywiście w formie kolejnych karteczek, które jedna za drugą trafiają na coraz bardziej zapełniającą się tablicę. Na dalszym etapie warsztatu grupuje się powiązane ze sobą elementy – wyodrębniać zaczynają się tzw. agregaty („Aggregates”).
+
+## Zalety
+### Zrozumienie domeny
+Podczas Event Stormingu następuje wymiana wiedzy pomiędzy ekspertami technicznymi a ekspertami domenowymi. Nie rozmawia się o bazach danych, frameworkach, czy mapowaniach relacyjno- obiektowych. Zamiast tego, wszyscy uczestnicy posługują się pojęciami domenowymi. Eksperci techniczni zapoznają się dzięki temu z domeną, a eksperci domenowi zgłębiają sposób działania danego oprogramowania.
+
+### Wspólny język
+Jako styk biznesu i programowania, Event Storming pozwala ujednolicić pojęcia używane we współpracy z klientem. A wspólny i jednolity język to już spory krok do stworzenia projektu na podstawie Domain-Driven Design.
+
+### Szybkość działania
+W przypadku nowych dopiero rozpoczynających się projektów, Event Storming jest alternatywą dla innych, dłuższych procesów planowania wstępnego. Zebranie w ramach jednego, kilkugodzinnego warsztatu różnych osób zaangażowanych w dany produkt, już na tak wczesnym etapie jego tworzenia, może być korzystniejsze niż odkrywanie poszczególnych wymogów produktowych dopiero w trakcie developmentu.
+
+### Dystrybucja wiedzy
+Event Storming propaguje wiedzę – tak wewnątrz zespołów, jak i pomiędzy nimi. Taka dystrybucja wiedzy między różne osoby zaangażowane w wytwarzanie oprogramowania przeciwdziała tworzeniu tzw. silosów wiedzy. Specjalistom technicznym daje to możliwości nauki i większego zaangażowania w projekt, a także zapewnia płynność prac w projekcie, na wypadek zmian kadrowych.
+
+### Zapewnienie jakości
+Event Storming przekłada się nie tylko na zrozumienie domeny, ale także na dogłębną analizę zależności pomiędzy poszczególnymi funkcjonalnościami oprogramowania. A to właśnie osadzona w wiedzy domenowej, pełna świadomość procesów zachodzących w wytwarzanym produkcie jest jednym z czynników prowadzących do dostarczenia produktu wysokiej jakości.
+
+### Identyfikacja problemów
+Również długo funkcjonujące projekty zyskać mogą na wdrożeniu Event Stormingu jako narzędzia analizy problemów, używanego, chociażby do eliminowania tzw. wąskich gardeł.
+
+### Integracja
+Event Storming stanowi okazję do integracji zespołu poprzez wspólną naukę – oparty jest przecież przede wszystkim na rozmowie i zaangażowaniu wielu stron. A dla osób rozpoczynających pracę w danym projekcie, udział w sesji Event Stormingu może być jedną z metod wdrożenia projektowego.
